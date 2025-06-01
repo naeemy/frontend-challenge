@@ -68,7 +68,7 @@ export const CityList = React.forwardRef<HTMLDivElement, CityListProps>(
       if (onSortChange) {
         onSortChange(newSortBy);
       } else {
-        setInternalSortBy(newSortBy);
+        setInternalSortBy(newSortBy as any);
       }
     };
 
@@ -170,7 +170,7 @@ export const CityList = React.forwardRef<HTMLDivElement, CityListProps>(
                 onClick={() => setLayout("grid")}
                 className="px-3"
               >
-                <Icon name="grid" size="sm" />
+                <Icon name={"grid" as any} size="sm" />
               </Button>
               <Button
                 variant={layout === "list" ? "primary" : "ghost"}
@@ -178,7 +178,7 @@ export const CityList = React.forwardRef<HTMLDivElement, CityListProps>(
                 onClick={() => setLayout("list")}
                 className="px-3"
               >
-                <Icon name="list" size="sm" />
+                <Icon name={"list" as any} size="sm" />
               </Button>
             </div>
           </div>
@@ -259,10 +259,10 @@ const CityCardWithWeather: React.FC<CityCardWithWeatherProps> = ({
   return (
     <CityCard
       city={city}
-      weather={weatherData}
+      weather={weatherData as any}
       temperatureUnit={temperatureUnit}
       isLoading={isLoading || isRemoving}
-      error={error}
+      error={error as any}
       onClick={onClick}
       onRemove={onRemove}
       size={size}

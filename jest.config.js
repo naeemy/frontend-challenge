@@ -15,6 +15,7 @@ const customJestConfig = {
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
   transformIgnorePatterns: ['/node_modules/'],
+  testMatch: ["**/?(*.)+(test).[jt]s?(x)"]
 };
 
 module.exports = createJestConfig(customJestConfig);

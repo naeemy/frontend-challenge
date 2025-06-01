@@ -136,7 +136,7 @@ export const CityCard = React.forwardRef<HTMLDivElement, CityCardProps>(
                 <div className="flex items-center gap-3">
                   <WeatherIcon
                     condition={weather.condition}
-                    icon={weather.icon}
+                    icon={weather.icon!}
                     size={size === "sm" ? "md" : "lg"}
                   />
                   <div>

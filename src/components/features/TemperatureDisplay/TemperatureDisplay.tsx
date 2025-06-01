@@ -216,7 +216,6 @@ export const TemperatureCompare = React.forwardRef<
           temperature={temperature}
           unit={unit}
           size={size}
-          className={className}
         />
       );
     }

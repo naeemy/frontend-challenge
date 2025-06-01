@@ -190,7 +190,7 @@ export const LocationDisplay = React.forwardRef<
               variant="muted"
               className="flex items-center gap-1"
             >
-              <Icon name="clock" size="xs" />
+              <Icon name={"clock" as any} size="xs" />
               {currentTime}
             </Text>
           )}

@@ -429,7 +429,7 @@ export interface ForecastPreferences {
   /** Alert preferences */
   alerts: {
     enabled: boolean;
-    severity: AlertSeverity[];
+    severity: ForecastAlertSeverity[];
     types: WeatherEventType[];
   };
 

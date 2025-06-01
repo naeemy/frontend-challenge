@@ -127,7 +127,6 @@ export const TemperatureUnitSelector = React.forwardRef<
           onChange={handleChange}
           size={size}
           disabled={disabled}
-          label={showLabel ? label : undefined}
           placeholder="Select unit..."
         />
       </div>

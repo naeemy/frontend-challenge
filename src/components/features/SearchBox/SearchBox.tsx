@@ -130,7 +130,7 @@ export const SearchBox = React.forwardRef<HTMLInputElement, SearchBoxProps>(
         case "Enter":
           e.preventDefault();
           if (focusedIndex >= 0 && focusedIndex < suggestions.length) {
-            handleCitySelect(suggestions[focusedIndex]);
+            handleCitySelect(suggestions[focusedIndex]!);
           }
           break;
         case "Escape":
@@ -153,7 +153,7 @@ export const SearchBox = React.forwardRef<HTMLInputElement, SearchBoxProps>(
       <div className={clsx("relative w-full", className)} ref={containerRef}>
         <Input
           ref={(node) => {
-            inputRef.current = node;
+            //inputRef.current = node;
             if (typeof ref === "function") {
               ref(node);
             } else if (ref) {
@@ -165,7 +165,7 @@ export const SearchBox = React.forwardRef<HTMLInputElement, SearchBoxProps>(
           onFocus={handleInputFocus}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          size={size}
+          size={size as any}
           disabled={disabled}
           autoFocus={autoFocus}
           autoComplete="off"
@@ -185,7 +185,7 @@ export const SearchBox = React.forwardRef<HTMLInputElement, SearchBoxProps>(
               )}
             </div>
           }
-          error={error}
+          error={error as any}
         />
 
         {/* Suggestions Dropdown */}
@@ -218,5 +218,6 @@ export const SearchBox = React.forwardRef<HTMLInputElement, SearchBoxProps>(
     );
   },
 );
+("playwright.config.ts");
 
 SearchBox.displayName = "SearchBox";

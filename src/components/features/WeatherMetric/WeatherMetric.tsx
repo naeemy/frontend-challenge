@@ -115,7 +115,7 @@ export const WeatherMetric = React.forwardRef<
 
       return (
         <div className={clsx("flex items-center gap-1", trendColors[trend])}>
-          <Icon name={trendIcons[trend]} size="xs" />
+          <Icon name={trendIcons[trend] as any} size="xs" />
           <Text size="xs" className={trendColors[trend]}>
             {trendValue}
             {unit && ` ${unit}`}
@@ -255,7 +255,7 @@ export const PressureMetric = (
 
 export const VisibilityMetric = (
   props: Omit<WeatherMetricProps, "icon" | "label">,
-) => <WeatherMetric icon="eye" label="Visibility" {...props} />;
+) => <WeatherMetric icon={"eye" as any} label="Visibility" {...props} />;
 
 export const UVIndexMetric = (
   props: Omit<WeatherMetricProps, "icon" | "label">,

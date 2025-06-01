@@ -107,7 +107,7 @@ export const HourlyForecast = React.forwardRef<
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <Icon name="clock" size="sm" />
+                <Icon name={"clock" as any} size="sm" />
                 {title}
               </CardTitle>
 
@@ -225,7 +225,7 @@ export const HourlyForecast = React.forwardRef<
 
                 <span>
                   Updated{" "}
-                  {new Date(forecast[0]?.dt * 1000).toLocaleTimeString()}
+                  {new Date(forecast[0]!?.dt * 1000).toLocaleTimeString()}
                 </span>
               </div>
             </CardContent>

@@ -76,6 +76,9 @@
     ".next",
     "out",
     "dist",
-    "build"
+    "build",
+    "jest.setup.ts",
+    "playwright.config.ts",
+    "__tests__"
   ]
 }

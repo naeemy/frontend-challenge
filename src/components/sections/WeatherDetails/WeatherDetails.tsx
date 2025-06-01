@@ -119,7 +119,6 @@ export const WeatherDetails = React.forwardRef<
               <div className="space-y-4">
                 <WeatherIcon
                   condition={weather.condition}
-                  icon={weather.icon}
                   size="xl"
                   animated
                   className="mx-auto"
@@ -169,11 +168,6 @@ export const WeatherDetails = React.forwardRef<
           <WindMetric
             value={weather.windSpeed}
             unit={temperatureUnit === "celsius" ? "km/h" : "mph"}
-            description={
-              weather.windDirection
-                ? getWindDirection(weather.windDirection)
-                : undefined
-            }
           />
 
           <HumidityMetric value={weather.humidity} unit="%" />
@@ -182,7 +176,7 @@ export const WeatherDetails = React.forwardRef<
 
           {weather.visibility !== undefined && (
             <WeatherMetric
-              icon="eye"
+              icon={"eye" as any}
               label="Visibility"
               value={weather.visibility}
               unit={temperatureUnit === "celsius" ? "km" : "mi"}
@@ -304,7 +298,6 @@ export const WeatherDetails = React.forwardRef<
                         temperature={weather.dewPoint}
                         unit={temperatureUnit}
                         size="md"
-                        weight="medium"
                       />
                     </div>
                   )}

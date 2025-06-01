@@ -165,7 +165,6 @@ export const SearchResults = React.forwardRef<
                     <div className="flex items-center gap-4">
                       <WeatherIcon
                         condition={weatherData.condition}
-                        icon={weatherData.icon}
                         size="lg"
                         animated
                       />

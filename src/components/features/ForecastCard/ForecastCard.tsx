@@ -113,7 +113,7 @@ export const ForecastCard = React.forwardRef<HTMLDivElement, ForecastCardProps>(
       return (
         <Card
           ref={ref}
-          variant={getCardVariant()}
+          variant={getCardVariant() as any}
           padding="none"
           className={clsx(
             "transition-all duration-200 hover:shadow-md",
@@ -141,7 +141,7 @@ export const ForecastCard = React.forwardRef<HTMLDivElement, ForecastCardProps>(
               {/* Weather Icon */}
               <WeatherIcon
                 condition={forecast.condition}
-                icon={forecast.icon}
+                icon={forecast.icon!}
                 size={config.icon}
                 className="flex-shrink-0"
               />
@@ -179,7 +179,7 @@ export const ForecastCard = React.forwardRef<HTMLDivElement, ForecastCardProps>(
     return (
       <Card
         ref={ref}
-        variant={getCardVariant()}
+        variant={getCardVariant() as any}
         padding="none"
         className={clsx(
           "transition-all duration-200 hover:shadow-md",
@@ -206,7 +206,7 @@ export const ForecastCard = React.forwardRef<HTMLDivElement, ForecastCardProps>(
 
             <WeatherIcon
               condition={forecast.condition}
-              icon={forecast.icon}
+              icon={forecast.icon!}
               size={config.icon}
               className="mx-auto"
             />

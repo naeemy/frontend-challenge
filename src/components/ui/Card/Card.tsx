@@ -60,7 +60,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <Component>
         <div
           className={clsx(
-            cardVariants({ variant, size: padding || size }),
+            cardVariants({ variant, size: (padding as any) || size }),
             className,
           )}
           ref={ref}

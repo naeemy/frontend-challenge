@@ -241,14 +241,14 @@ export interface BreadcrumbProps {
   className?: string;
 }
 
-export const Breadcrumb = React.forwardRef<HTMLNavElement, BreadcrumbProps>(
+export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
   ({ items, className }, ref) => {
     return (
       <nav ref={ref} className={clsx("flex items-center gap-2", className)}>
         {items.map((item, index) => (
           <React.Fragment key={index}>
             {index > 0 && (
-              <Icon name="chevron-right" size="xs" variant="muted" />
+              <Icon name={"chevron-right" as any} size="xs" variant="muted" />
             )}
             {item.href && !item.active ? (
               <Link
@@ -260,7 +260,7 @@ export const Breadcrumb = React.forwardRef<HTMLNavElement, BreadcrumbProps>(
             ) : (
               <Text
                 size="sm"
-                variant={item.active ? "default" : "muted"}
+                variant={item.active ? ("default" as any) : ("muted" as any)}
                 weight={item.active ? "medium" : "normal"}
               >
                 {item.label}

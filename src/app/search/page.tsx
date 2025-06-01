@@ -181,7 +181,7 @@ export default function SearchPage() {
             <div className="flex gap-3">
               <Button
                 onClick={handleAddCity}
-                disabled={isAdding || isCityAlreadyAdded}
+                disabled={isAdding || isCityAlreadyAdded!}
                 className="flex-1"
                 size="lg"
               >
