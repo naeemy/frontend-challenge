@@ -1,33 +1,52 @@
 import { renderHook, act } from "@testing-library/react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
+// Create proper Jest mocks for localStorage
+const mockGetItem = jest.fn();
+const mockSetItem = jest.fn();
+const mockRemoveItem = jest.fn();
+
+const mockClear = jest.fn();
+
+// Mock localStorage with proper Jest functions
+Object.defineProperty(window, "localStorage", {
+  value: {
+    getItem: mockGetItem,
+
+    setItem: mockSetItem,
+
+    removeItem: mockRemoveItem,
+    clear: mockClear,
+  },
+
+  writable: true,
+});
+
 describe("useLocalStorage Hook", () => {
   beforeEach(() => {
     // Clear localStorage mock
-    (localStorage.getItem as jest.Mock).mockClear();
-    (localStorage.setItem as jest.Mock).mockClear();
-    (localStorage.removeItem as jest.Mock).mockClear();
-    (localStorage.clear as jest.Mock).mockClear();
+    mockGetItem.mockClear();
+    mockSetItem.mockClear();
+    mockRemoveItem.mockClear();
+    mockClear.mockClear();
   });
 
   it("returns initial value when localStorage is empty", () => {
-    (localStorage.getItem as jest.Mock).mockReturnValue(null);
+    mockGetItem.mockReturnValue(null);
 
     const { result } = renderHook(() => useLocalStorage("test-key", "initial"));
     expect(result.current[0]).toBe("initial");
   });
 
   it("returns stored value from localStorage", () => {
-    (localStorage.getItem as jest.Mock).mockReturnValue(
-      JSON.stringify("stored-value"),
-    );
+    mockGetItem.mockReturnValue(JSON.stringify("stored-value"));
 
     const { result } = renderHook(() => useLocalStorage("test-key", "initial"));
     expect(result.current[0]).toBe("stored-value");
   });
 
   it("updates localStorage when value changes", () => {
-    (localStorage.getItem as jest.Mock).mockReturnValue(null);
+    mockGetItem.mockReturnValue(null);
 
     const { result } = renderHook(() => useLocalStorage("test-key", "initial"));
 
@@ -36,14 +55,11 @@ describe("useLocalStorage Hook", () => {
     });
 
     expect(result.current[0]).toBe("new-value");
-    expect(localStorage.setItem).toHaveBeenCalledWith(
-      "test-key",
-      '"new-value"',
-    );
+    expect(mockSetItem).toHaveBeenCalledWith("test-key", '"new-value"');
   });
 
   it("handles function updater", () => {
-    (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(10));
+    mockGetItem.mockReturnValue(JSON.stringify(10));
 
     const { result } = renderHook(() => useLocalStorage("test-key", 10));
 
@@ -52,13 +68,11 @@ describe("useLocalStorage Hook", () => {
     });
 
     expect(result.current[0]).toBe(15);
-    expect(localStorage.setItem).toHaveBeenCalledWith("test-key", "15");
+    expect(mockSetItem).toHaveBeenCalledWith("test-key", "15");
   });
 
   it("removes value from localStorage", () => {
-    (localStorage.getItem as jest.Mock).mockReturnValue(
-      JSON.stringify("value"),
-    );
+    mockGetItem.mockReturnValue(JSON.stringify("value"));
 
     const { result } = renderHook(() => useLocalStorage("test-key", "initial"));
 
@@ -67,11 +81,11 @@ describe("useLocalStorage Hook", () => {
     });
 
     expect(result.current[0]).toBe("initial");
-    expect(localStorage.removeItem).toHaveBeenCalledWith("test-key");
+    expect(mockRemoveItem).toHaveBeenCalledWith("test-key");
   });
 
   it("handles JSON parse errors gracefully", () => {
-    (localStorage.getItem as jest.Mock).mockReturnValue("invalid-json");
+    mockGetItem.mockReturnValue("invalid-json");
 
     const { result } = renderHook(() =>
       useLocalStorage("test-key", "fallback"),
@@ -84,11 +98,10 @@ describe("useLocalStorage Hook", () => {
     const complexObject = {
       name: "test",
       items: [1, 2, 3],
+
       nested: { value: true },
     };
-    (localStorage.getItem as jest.Mock).mockReturnValue(
-      JSON.stringify(complexObject),
-    );
+    mockGetItem.mockReturnValue(JSON.stringify(complexObject));
 
     const { result } = renderHook(() => useLocalStorage("test-key", {}));
     expect(result.current[0]).toEqual(complexObject);
@@ -96,9 +109,7 @@ describe("useLocalStorage Hook", () => {
 
   it("handles arrays correctly", () => {
     const testArray = ["item1", "item2", "item3"];
-    (localStorage.getItem as jest.Mock).mockReturnValue(
-      JSON.stringify(testArray),
-    );
+    mockGetItem.mockReturnValue(JSON.stringify(testArray));
 
     const { result } = renderHook(() => useLocalStorage("test-key", []));
     expect(result.current[0]).toEqual(testArray);
@@ -111,7 +122,7 @@ describe("useLocalStorage Hook", () => {
   });
 
   it("handles null and undefined values", () => {
-    (localStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(null));
+    mockGetItem.mockReturnValue(JSON.stringify(null));
 
     const { result } = renderHook(() => useLocalStorage("test-key", "default"));
     expect(result.current[0]).toBeNull();
@@ -120,11 +131,11 @@ describe("useLocalStorage Hook", () => {
       result.current[1](undefined);
     });
 
-    expect(localStorage.setItem).toHaveBeenCalledWith("test-key", "undefined");
+    expect(mockSetItem).toHaveBeenCalledWith("test-key", undefined);
   });
 
   it("handles storage errors gracefully", () => {
-    (localStorage.setItem as jest.Mock).mockImplementation(() => {
+    mockSetItem.mockImplementation(() => {
       throw new Error("Storage quota exceeded");
     });
 
@@ -137,5 +148,26 @@ describe("useLocalStorage Hook", () => {
 
     // Value should still be updated in component state
     expect(result.current[0]).toBe("new-value");
+  });
+
+  it("handles getItem errors gracefully", () => {
+    mockGetItem.mockImplementation(() => {
+      throw new Error("Storage access denied");
+    });
+
+    const { result } = renderHook(() =>
+      useLocalStorage("test-key", "fallback"),
+    );
+
+    // Should fall back to initial value when localStorage fails
+    expect(result.current[0]).toBe("fallback");
+  });
+
+  it("calls localStorage.getItem with correct key", () => {
+    mockGetItem.mockReturnValue(null);
+
+    renderHook(() => useLocalStorage("my-test-key", "initial"));
+
+    expect(mockGetItem).toHaveBeenCalledWith("my-test-key");
   });
 });

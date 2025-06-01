@@ -1,5 +1,5 @@
 import React from "react";
-import { render, RenderOptions } from "@testing-library/react";
+import { render, RenderOptions, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { City, WeatherData, ForecastData } from "@/types";
 
@@ -27,8 +27,10 @@ export const createMockCity = (overrides?: Partial<City>): City => ({
   state: "CA",
   coordinates: { lat: 37.7749, lon: -122.4194 },
   timezone: "America/Los_Angeles",
+
   population: 1000000,
   addedAt: Date.now(),
+
   ...overrides,
 });
 
@@ -38,7 +40,6 @@ export const createMockWeatherData = (
   dt: Math.floor(Date.now() / 1000),
   temperature: 22,
   feelsLike: 24,
-
   condition: "clear sky",
   icon: "01d",
   humidity: 65,
@@ -49,6 +50,7 @@ export const createMockWeatherData = (
   uvIndex: 6,
   cloudCover: 20,
   sunrise: Math.floor(Date.now() / 1000) - 3600,
+
   sunset: Math.floor(Date.now() / 1000) + 3600,
   ...overrides,
 });
@@ -57,10 +59,12 @@ export const createMockForecastData = (
   overrides?: Partial<ForecastData>,
 ): ForecastData => ({
   dt: Math.floor(Date.now() / 1000) + 3600,
+
   temperature: 25,
   condition: "partly cloudy",
   icon: "02d",
   humidity: 60,
+
   windSpeed: 4.2,
   precipitation: 10,
   ...overrides,
@@ -79,7 +83,6 @@ export const mockFetchError = (error: string) => {
 };
 
 // Wait for async operations
-
 export const waitForAsync = () =>
   new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -93,7 +96,6 @@ export const mockGeolocation = (coords?: {
       success({
         coords: {
           latitude: coords?.latitude || 37.7749,
-
           longitude: coords?.longitude || -122.4194,
           accuracy: 10,
         },
@@ -120,6 +122,7 @@ export const findTextAnywhere = (text: string) => {
 
 export const expectTextToExist = (text: string) => {
   const exists = findTextAnywhere(text);
+
   if (!exists) {
     console.log(`Text "${text}" not found. Available content:`);
     console.log(document.body.textContent);
@@ -136,7 +139,6 @@ export const expectTemperatureDisplay = (
   const unitSymbol = unit === "celsius" ? "°C" : "°F";
 
   // Check for temperature number
-
   expect(container).toHaveTextContent(temperature.toString());
 
   // Check for unit symbol
@@ -172,7 +174,7 @@ export const findSuggestionWithText = (text: string) => {
   if (!listbox) return null;
 
   // Check if the suggestion contains the text (might be split with highlighting)
-  const suggestionButtons = screen.getAllByRole("option");
+  const suggestionButtons = screen.queryAllByRole("option");
   return suggestionButtons.find((button) => {
     const textContent = button.textContent || "";
     return textContent.toLowerCase().includes(text.toLowerCase());
@@ -198,4 +200,6 @@ export const expectWeatherMetric = (value: string | number, unit?: string) => {
   }
 };
 
+// Re-export everything from testing library
 export * from "@testing-library/react";
+export { screen } from "@testing-library/react";

@@ -10,26 +10,35 @@ import {
 } from "../../utils/test-utils";
 import { SearchBox } from "@/components/features";
 
-// Mock the city search hook
-
 const mockSearchCities = jest.fn();
 const mockClearSuggestions = jest.fn();
 
+// Mock the hook with default return values
+const mockUseCitySearch = jest.fn(() => ({
+  suggestions: [createMockCity({ name: "San Francisco" })],
+  isLoading: false,
+  error: null,
+  searchCities: mockSearchCities,
+  clearSuggestions: mockClearSuggestions,
+}));
+
 jest.mock("@/hooks/useCitySearch", () => ({
-  useCitySearch: () => ({
-    suggestions: [createMockCity({ name: "San Francisco" })],
-
-    isLoading: false,
-    error: null,
-    searchCities: mockSearchCities,
-
-    clearSuggestions: mockClearSuggestions,
-  }),
+  useCitySearch: () => mockUseCitySearch(),
 }));
 
 describe("SearchBox Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Reset to default mock implementation
+    mockUseCitySearch.mockReturnValue({
+      suggestions: [createMockCity({ name: "San Francisco" })],
+      isLoading: false,
+      error: null,
+
+      searchCities: mockSearchCities,
+      clearSuggestions: mockClearSuggestions,
+    });
   });
 
   it("renders search input", () => {
@@ -40,13 +49,29 @@ describe("SearchBox Component", () => {
   });
 
   it("handles input changes", async () => {
-    const handleChange = jest.fn();
-    const { user } = renderWithProviders(<SearchBox onChange={handleChange} />);
+    const { user } = renderWithProviders(<SearchBox />);
     const input = screen.getByRole("textbox");
 
     await user.type(input, "San Francisco");
     expect(input).toHaveValue("San Francisco");
-    expect(handleChange).toHaveBeenCalled();
+  });
+
+  it("handles controlled value changes", async () => {
+    const handleChange = jest.fn();
+    const { user } = renderWithProviders(
+      <SearchBox value="" onChange={handleChange} />,
+    );
+    const input = screen.getByRole("textbox");
+
+    await user.type(input, "S");
+
+    // When the component is controlled, onChange should be called
+    await waitFor(
+      () => {
+        expect(handleChange).toHaveBeenCalledWith("S");
+      },
+      { timeout: 500 },
+    );
   });
 
   it("shows suggestions when typing", async () => {
@@ -59,10 +84,8 @@ describe("SearchBox Component", () => {
       expect(mockSearchCities).toHaveBeenCalledWith("San");
     });
 
-    // Use utility functions
     expectSuggestionsVisible();
 
-    // Check that the suggestion contains "San Francisco" text (even if highlighted)
     const suggestion = findSuggestionWithText("San Francisco");
     expect(suggestion).toBeInTheDocument();
   });
@@ -77,12 +100,10 @@ describe("SearchBox Component", () => {
     const input = screen.getByRole("textbox");
     await user.type(input, "San");
 
-    // Wait for suggestions container
     await waitFor(() => {
       expect(screen.getByRole("listbox")).toBeInTheDocument();
     });
 
-    // Click on the suggestion option (button with role="option")
     const suggestionOption = screen.getByRole("option");
     await user.click(suggestionOption);
 
@@ -98,19 +119,15 @@ describe("SearchBox Component", () => {
 
     await user.type(input, "San");
 
-    // Wait for suggestions
     await waitFor(() => {
       expect(screen.getByRole("listbox")).toBeInTheDocument();
     });
 
-    // Test arrow down navigation
     await user.keyboard("{ArrowDown}");
 
-    // Check that the option is now selected (aria-selected="true")
     const suggestionOption = screen.getByRole("option");
     expect(suggestionOption).toHaveAttribute("aria-selected", "true");
 
-    // Test enter to select
     await user.keyboard("{Enter}");
   });
 
@@ -121,8 +138,8 @@ describe("SearchBox Component", () => {
     await user.type(input, "test");
     expect(input).toHaveValue("test");
 
-    // Find and click clear button (should appear when there's text)
-    const clearButton = screen.getByRole("button", { name: "" });
+    // Find clear button - it should be visible when there's text
+    const clearButton = screen.getByRole("button");
     await user.click(clearButton);
 
     expect(input).toHaveValue("");
@@ -131,15 +148,13 @@ describe("SearchBox Component", () => {
 
   it("shows loading state", () => {
     // Mock loading state
-    jest.doMock("@/hooks/useCitySearch", () => ({
-      useCitySearch: () => ({
-        suggestions: [],
-        isLoading: true,
-        error: null,
-        searchCities: mockSearchCities,
-        clearSuggestions: mockClearSuggestions,
-      }),
-    }));
+    mockUseCitySearch.mockReturnValue({
+      suggestions: [],
+      isLoading: true,
+      error: null,
+      searchCities: mockSearchCities,
+      clearSuggestions: mockClearSuggestions,
+    });
 
     renderWithProviders(<SearchBox />);
 
@@ -148,15 +163,13 @@ describe("SearchBox Component", () => {
 
   it("displays error state", () => {
     // Mock error state
-    jest.doMock("@/hooks/useCitySearch", () => ({
-      useCitySearch: () => ({
-        suggestions: [],
-        isLoading: false,
-        error: "Search failed",
-        searchCities: mockSearchCities,
-        clearSuggestions: mockClearSuggestions,
-      }),
-    }));
+    mockUseCitySearch.mockReturnValue({
+      suggestions: [],
+      isLoading: false,
+      error: "Search failed",
+      searchCities: mockSearchCities,
+      clearSuggestions: mockClearSuggestions,
+    });
 
     renderWithProviders(<SearchBox />);
     expect(screen.getByText("Search failed")).toBeInTheDocument();
@@ -168,14 +181,12 @@ describe("SearchBox Component", () => {
 
     await user.type(input, "San");
 
-    // Wait for suggestions using utility
     await waitFor(() => {
       expectSuggestionsVisible();
     });
 
     await user.keyboard("{Escape}");
 
-    // Suggestions should be hidden using utility
     await waitFor(() => {
       expectSuggestionsHidden();
     });
@@ -192,7 +203,11 @@ describe("SearchBox Component", () => {
 
     // Should not display suggestions listbox even if hook returns them
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
-    expect(screen.queryByText("San")).toBeInTheDocument(); // Should only be in the input
+
+    // Check that the input has the typed value
+    expect(input).toHaveValue("San");
+
+    // Should not show suggestion text outside the input
     expect(screen.queryByText(/Francisco/)).not.toBeInTheDocument();
   });
 
