@@ -1,5 +1,5 @@
 {
-  "name": "frontend-challenge",
+  "name": "weather-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,8 +12,19 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:unit": "jest --testPathIgnorePatterns=e2e",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:hooks": "jest --testPathPattern=hooks",
+    "test:components": "jest --testPathPattern=components",
+    "test:services": "jest --testPathPattern=services",
+    "test:all": "npm run test:unit && npm run test:e2e",
+    "test:changed": "jest --onlyChanged",
+    "test:related": "jest --findRelatedTests"
   },
   "dependencies": {
     "next": "^14.0.0",
